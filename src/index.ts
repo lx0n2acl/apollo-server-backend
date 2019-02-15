@@ -1,18 +1,27 @@
 import "reflect-metadata";
 import {createConnection} from "typeorm";
-import {User} from "./entity/User";
-import { ApolloServer, gql } from 'apollo-server';
+import {Item} from "./entity/Item";
+import { ApolloServer, gql, IResolvers } from 'apollo-server';
 
 const typeDefs = gql`
   type Query {
     sayHello: String!
+  }  
+  
+  type Mutation {
+    addItem(name: String!) : String
   }
 `;
 
-const resolvers = {
+const resolvers : IResolvers = {
   Query: {
     sayHello: () => "what's up",
   },
+  Mutation: {
+    addItem: async (_, {name}) => {
+      await Item.create({name}).save();
+    }
+  }
 };
 
 createConnection().then(async connection => {
